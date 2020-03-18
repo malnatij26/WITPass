@@ -1,14 +1,18 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import Body from 'UI/Body'
+import Body from './UI/Body'
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Body />
-    </View>
-  );
+export default class App extends Component {
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <Body />
+      </View>
+
+    )
+  }
 }
 
 const styles = StyleSheet.create({

@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Col, Row, Grid } from "react-native-easy-grid";
 
-export default class Body {
+export default class Body extends Component {
     render() {
         return(
             <Grid>
