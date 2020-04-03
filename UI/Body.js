@@ -1,15 +1,22 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Col, Row, Grid } from "react-native-easy-grid";
+import { TabView, SceneMap } from 'react-native-tab-view';
+
+import Read from './read'
+import Write from './write'
+import StatusBar from './StatusBar'
+import Routes from './Routes'
 
 export default class Body extends Component {
     render() {
+
+
         return(
-            <Grid>
-                <Row>
-                    <Text>Open up App.js to start working on your app!</Text>
-                </Row>
-            </Grid>
+            <View>
+                <StatusBar />
+                <Routes/>
+            </View>
             
         );
     }
