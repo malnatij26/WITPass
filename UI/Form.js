@@ -15,52 +15,47 @@ export default class Form extends Component {
     constructor(props){
         super(props);
         this.state={
-            email:'',
-            password: ''
+            firstName: ''
+            , lastName: ''
+            , witID: ''
+            , passType
+            , semester: ''
+            , make: ''
+            , model: ''
+            , color: ''
+            , license: ''
         }
     }
 
-    loginTRUE() {
-        Actions.home()
-    }
- 
-    saveData =async()=>{
-        const {email,password} = this.state;
- 
-        //save data with asyncstorage
-        let loginDetails={
-            email: email,
-            password: password
+    _cleanUp = () => {
+        NfcManager.cancelTechnologyRequest().catch(() => 0);
+      }
+    
+      writeToTag = async () => {
+        try {
+          let resp = await NfcManager.requestTechnology(NfcTech.Ndef, {
+            alertMessage: 'Ready to write, place your phone near a NFC tag.'
+          });
+          console.warn(resp);
+          let ndef = await NfcManager.getNdefMessage();
+          console.warn(ndef);
+          let bytes = buildTextPayload(
+            'Name: ' + this.state.firstName + ' ' + this.state.lastName +
+            '\nwitID: ' + this.state.witID +
+            '\npassType: ' + this.state.passType +
+            '\nsemester: ' + this.state.semester +
+            '\nmake: ' + this.state.color + ' ' + this.state.make + ' ' + this.state.model +
+            '\nlicense: ' + this.state.license );
+          await NfcManager.writeNdefMessage(bytes);
+          console.warn('successfully write ndef');
+          await NfcManager.setAlertMessageIOS('I got your tag!');
+          this._cleanUp();
+        } catch (ex) {
+          console.warn('ex', ex);
+          this._cleanUp();
         }
-        
-        //Register form
-        if(this.props.type !== 'Login')
-        {
-            AsyncStorage.setItem('loginDetails', JSON.stringify(loginDetails));
- 
-            Keyboard.dismiss();
-            alert("You successfully registered. Email: " + email + ' password: ' + password);
-            this.login();
-        }
-
-        //Login form
-        else if(this.props.type == 'Login')
-        {
-            try{
-                    Actions.home();
- 
-            }catch(error)
-            {
-                alert(error);
-            }
-        }
-    }
- 
-    showData = async()=>{
-        let loginDetails = await AsyncStorage.getItem('loginDetails');
-        let ld = JSON.parse(loginDetails);
-        alert('email: '+ ld.email + ' ' + 'password: ' + ld.password);
-    }
+      }
+    
  
     render() {
         return(
@@ -72,33 +67,33 @@ export default class Form extends Component {
                 <Text style={styles.txt}>Name</Text>
 
                 <TextInput style={styles.inputBox}
-                onChangeText={(email) => this.setState({email})}
+                onChangeText={(firstName) => this.setState({firstName})}
                 underlineColorAndroid='rgba(0,0,0,0)' 
                 placeholder="First Name"
                 placeholderTextColor = "#000000"
                 selectionColor="#fff"
                 keyboardType="email-address"
-                onSubmitEditing={()=> this.password.focus()}/>
+                onSubmitEditing={()=> this.lastName.focus()}/>
 
                 <TextInput style={styles.inputBox}
-                onChangeText={(email) => this.setState({email})}
+                onChangeText={(lastName) => this.setState({lastName})}
                 underlineColorAndroid='rgba(0,0,0,0)' 
                 placeholder="Last Name"
                 placeholderTextColor = "#000000"
                 selectionColor="#fff"
                 keyboardType="email-address"
-                onSubmitEditing={()=> this.password.focus()}/>
+                onSubmitEditing={()=> this.witID.focus()}/>
 
                 {/* WIT ID */}
                 <Text style={styles.txt}>Wentworth ID</Text>
                 <TextInput style={styles.inputBox}
-                onChangeText={(email) => this.setState({email})}
+                onChangeText={(witID) => this.setState({witID})}
                 underlineColorAndroid='rgba(0,0,0,0)' 
                 placeholder="Wentworth ID"
                 placeholderTextColor = "#000000"
                 selectionColor="#fff"
                 keyboardType="email-address"
-                onSubmitEditing={()=> this.password.focus()}/>
+                onSubmitEditing={()=> this.passType.focus()}/>
                 
                 {/* Pass Type */}
                 <Text style={styles.txt}>Pass Type</Text>
@@ -106,7 +101,8 @@ export default class Form extends Component {
                 <Picker
                     selectedValue={this.state.passtype}
                     style={styles.inputBox}
-                    onValueChange={(itemValue, itemIndex) => this.setState({ passtype: itemValue })}>
+                    onValueChange={(itemValue, itemIndex) => this.setState({ passtype: itemValue })}
+                    onSubmitEditing={()=> this.semester.focus()}>
                     <Picker.Item label="Student" value="Student" />
                     <Picker.Item label="Faculty" value="Faculty" />
                     <Picker.Item label="Visitor" value="Visitor" />
@@ -118,58 +114,55 @@ export default class Form extends Component {
                 <Picker
                     selectedValue={this.state.semester}
                     style={styles.inputBox}
-                    onValueChange={(itemValue, itemIndex) => this.setState({ semester: itemValue })}>
+                    onValueChange={(itemValue, itemIndex) => this.setState({ semester: itemValue })}
+                    onSubmitEditing={()=> this.make.focus()}>
                     <Picker.Item label="Spring 2020" value="Spring 2020" />
                     <Picker.Item label="Summer 2020" value="Summer 2020" />
                 </Picker>
 
 
-{/* 
-                    
-                    */}
                 <Text style={styles.header}>Car</Text>
                 
                 {/* Make, model, color */}
                 <Text style={styles.txt}>Make, Model, and Color</Text>
 
                 <TextInput style={styles.inputBox}
-                onChangeText={(email) => this.setState({email})}
+                onChangeText={(make) => this.setState({make})}
                 underlineColorAndroid='rgba(0,0,0,0)' 
                 placeholder="Make"
                 placeholderTextColor = "#000000"
                 selectionColor="#fff"
                 keyboardType="email-address"
-                onSubmitEditing={()=> this.password.focus()}/>
+                onSubmitEditing={()=> this.model.focus()}/>
 
                 <TextInput style={styles.inputBox}
-                onChangeText={(email) => this.setState({email})}
+                onChangeText={(model) => this.setState({model})}
                 underlineColorAndroid='rgba(0,0,0,0)' 
                 placeholder="Model"
                 placeholderTextColor = "#000000"
                 selectionColor="#fff"
                 keyboardType="email-address"
-                onSubmitEditing={()=> this.password.focus()}/>
+                onSubmitEditing={()=> this.color.focus()}/>
 
                 <TextInput style={styles.inputBox}
-                onChangeText={(email) => this.setState({email})}
+                onChangeText={(color) => this.setState({color})}
                 underlineColorAndroid='rgba(0,0,0,0)' 
                 placeholder="Color"
                 placeholderTextColor = "#000000"
                 selectionColor="#fff"
                 keyboardType="email-address"
-                onSubmitEditing={()=> this.password.focus()}/>
+                onSubmitEditing={()=> this.license.focus()}/>
 
                 {/* license number */}
                 <Text style={styles.txt}>License Number</Text>
 
                 <TextInput style={styles.inputBox}
-                onChangeText={(email) => this.setState({email})}
+                onChangeText={(license) => this.setState({license})}
                 underlineColorAndroid='rgba(0,0,0,0)' 
                 placeholder="License"
                 placeholderTextColor = "#000000"
                 selectionColor="#fff"
-                keyboardType="email-address"
-                onSubmitEditing={()=> this.password.focus()}/>
+                keyboardType="email-address"/>
 
  
                 {/* submit button */}
