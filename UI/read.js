@@ -23,7 +23,7 @@ export default class Read extends Component {
     //read tag
     try {
       await NfcManager.registerTagEvent(eventMsg);
-      alert(eventMsg)
+      alert('Student Information\n\n' + eventMsg)
     } catch (ex) {
       console.warn('ex', ex);
       NfcManager.unregisterTagEvent().catch(() => 0);
